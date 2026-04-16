@@ -5,6 +5,7 @@ from app.routes import auth
 from app.models import ticket 
 from app.routes import tickets
 from app.routes import admin
+from app.routes import ai
 
 Base.metadata.create_all(bind=engine) # create tables
 
@@ -24,3 +25,4 @@ app.include_router(tickets.router)
 
 app.include_router(admin.router)
 
+app.include_router(ai.router)

@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.ticket import Ticket
-# from app.schemas.ticket import TicketCreate
 from app.core.deps import get_current_user
 from app.models.user import User
 from typing import Optional
@@ -38,6 +37,9 @@ def create_ticket(
 def get_tickets(
     status: Optional[str] = None,
     priority: Optional[str] = None,
+    search: Optional[str] = None,
+    skip: int =0,
+    limit: int = 10,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -54,7 +56,13 @@ def get_tickets(
     if priority:
         query = query.filter(Ticket.priority == priority)
 
-    return query.all()
+    if search:
+        query = query.filter(
+            Ticket.title.contains(search) |
+            Ticket.description.contains(search)
+        )
+        
+    return query.offset(skip).limit(limit).all()
 
 
 @router.get("/{ticket_id}")
